@@ -1,0 +1,5 @@
+#Sensitive information
+secret.txt
+
+#Unnecessary folders and files
+__pycache__/
