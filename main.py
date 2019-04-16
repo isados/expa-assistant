@@ -1,10 +1,15 @@
 import time
 from selenium import webdriver
+
+from selenium.webdriver.firefox.firefox_binary import FirefoxBinary
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.touch_actions import TouchActions
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
 from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+from selenium.webdriver.common.keys import Keys
 
 import os
 import clipboard
@@ -107,10 +112,10 @@ CC: {cc}
             send_mail(name, to, cc, bcc, name_of_sender, sender_email, sender_pwd)
             return
         elif choice == 'c':
-            name = input('Enter Name :').strip().lower()
+            name = input('Enter Name :')
             continue
         elif choice == 'b':
-            bcc = input("Please enter BCC receivers separated by commas and no spaces :").lower().replace(' ','').split(',')
+            bcc = input("Please enter BCC receivers separated by commas and no spaces :").replace(' ','').split(',')
             if bcc != ['']: bcc_entry = 'BCC: ' + str(bcc) + '\n'
             else: bcc = []; bcc_entry = ''
         else:
@@ -126,12 +131,15 @@ if __name__ == '__main__':
 
     num_of_applicants = 5
     try:
-        num_of_applicants = int(input('How many applicants would you like to process? (Default is 5) :').strip())
-    except:
-        pass
+        num_of_applicants = int(input(f'How many applicants would you like to process? (Default is {num_of_applicants}) :').strip())
+    except ValueError:
+        print('Invalid value entered, going with default instead.')
     print()
 
     driver = webdriver.Chrome(os.getcwd()+"/chromedriver")  # Optional argument, if not specified will search path.
+    # binary = FirefoxBinary('/usr/bin/firefox')
+    # caps = DesiredCapabilities().FIREFOX
+    # driver = webdriver.Firefox(firefox_binary=binary, executable_path=os.getcwd()+"/geckodriver")
     driver.get('https://expa.aiesec.org');
 
     driver.implicitly_wait(60) # seconds
@@ -141,7 +149,8 @@ if __name__ == '__main__':
     pwd = driver.find_element_by_name('user[password]')
     email.send_keys(login_details['expa_username'])
     pwd.send_keys(login_details['expa_pwd'])
-    pwd.submit()
+    # pwd.submit()
+    driver.find_element_by_class_name('login-btn').click()
 
 
 
@@ -173,7 +182,7 @@ if __name__ == '__main__':
         popup_elements = {
 
         }
-        # row = 1
+
         persons=[]
         for row in range(1, num_of_applicants + 1):
 
@@ -188,6 +197,7 @@ if __name__ == '__main__':
 
             #Check for duplicate entry, and just append the Job title
             ep_name = get_element(f"//div[1]/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[1]/div[3]/div[1]/div[{row}]/div/{elem_location['Name']}").text
+            # if 'Bob' not in ep_name: continue
             job_des = get_element(f"//div[1]/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[1]/div[3]/div[1]/div[{row}]/div/{elem_location['Job_Description']}").text
             list_of_appended_applicants_so_far = {p['Name']:index for index, p in enumerate(persons)}
 
@@ -237,10 +247,30 @@ if __name__ == '__main__':
                 print('{} : {}'.format(key,p[key]))
             choice = input('\nDo you want to process this applicant or move on? (y/n):').lower().strip()
             if choice == 'y':
-                submit_tracker(p)
                 send_ep_welcome_email(p, login_details['name'], login_details['email'], login_details['email_pwd'])
+                submit_tracker(p)
             print()
 
         time.sleep(5) # Let the user actually see something!
     finally:
         driver.quit()
+
+
+
+"""
+Call with Bob
+Ishmael interview him 3 weeks... take snapshots for the conversation
+mohith for akalati ... have to contact his LC
+june1 to july 15 1st batch boys
+Talk to Sarin about Dinesh
+
+july 15th girls
+Apurva Muthe call tomorrow
+Website content manager add JD, check out Sarin's candidate
+
+27th 23:40
+Layka
+delmonbn@batelco.com.bh
+
+2nd may :9:20
+"""
