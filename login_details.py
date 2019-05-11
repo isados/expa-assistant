@@ -46,7 +46,7 @@ def create_login_file(login_details:dict, key:str, path:str = secret_file):
         print(f"Login details written to '{path}'")
 
 def verify_passcode_get_details():
-    passcode = input('\nEnter your PASSCODE:')
+    passcode = getpass(prompt = '\nEnter your PASSCODE:')
     print()
     details = read_login_details(passcode)
     return details

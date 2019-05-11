@@ -93,7 +93,6 @@ def extract_epm_details(browser, info, path):
 
 def send_ep_welcome_email(receiver:dict, name_of_sender:str, sender_email:str, sender_pwd:str):
     # Format name
-    # send_ep_welcome_email(name, to, cc, bcc, subject, name_of_sender, sender_email, sender_pwd)
 
     name = receiver['Name'].split()[0] #First Name
     name = name[0].upper() + name[1:] #Captilize the first letter
@@ -109,7 +108,7 @@ CC: {cc}
 {bcc_entry}""")
         choice = input("Yes(y), Change Name(c), Add BCC(b), No(n) :").lower().strip()
         if choice == 'y':
-            send_mail(name, to, cc, bcc, name_of_sender, sender_email, sender_pwd)
+            send_mail(name, to, cc, bcc, name_of_sender, sender_email, sender_pwd, template = 'welcome')
             return
         elif choice == 'c':
             name = input('Enter Name :')
@@ -197,7 +196,7 @@ if __name__ == '__main__':
 
             #Check for duplicate entry, and just append the Job title
             ep_name = get_element(f"//div[1]/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[1]/div[3]/div[1]/div[{row}]/div/{elem_location['Name']}").text
-            # if 'Bob' not in ep_name: continue
+            # if 'Mohith' not in ep_name: continue
             job_des = get_element(f"//div[1]/div/div[2]/div/div/div[2]/div/div/div[2]/div/div[1]/div[3]/div[1]/div[{row}]/div/{elem_location['Job_Description']}").text
             list_of_appended_applicants_so_far = {p['Name']:index for index, p in enumerate(persons)}
 
@@ -260,17 +259,5 @@ if __name__ == '__main__':
 """
 Call with Bob
 Ishmael interview him 3 weeks... take snapshots for the conversation
-mohith for akalati ... have to contact his LC
 june1 to july 15 1st batch boys
-Talk to Sarin about Dinesh
-
-july 15th girls
-Apurva Muthe call tomorrow
-Website content manager add JD, check out Sarin's candidate
-
-27th 23:40
-Layka
-delmonbn@batelco.com.bh
-
-2nd may :9:20
 """

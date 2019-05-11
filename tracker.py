@@ -6,7 +6,15 @@ from selenium.webdriver.common.keys import Keys
 from country import *
 
 def submit_tracker(person):
+    choice = input('\nDo you want to post to the tracker as well? (y/n) : ').lower().strip()
+    if choice != 'y': return
     try:
+        #Pre-Enter Gender; Male is 0th element
+        gender = ''
+        while(gender != 'm' and gender != 'f'):
+            gender = input(f"\nEnter {person['Name']}'s Gender(m/f):").lower().strip()
+
+        #Open form
         sheet = webdriver.Chrome(os.getcwd()+"/chromedriver")  # Optional argument, if not specified will search path.
         sheet.implicitly_wait(40) # seconds
         sheet.get('https://goo.gl/forms/CsgDOUWQ6hPWXOCg1');
@@ -19,6 +27,10 @@ def submit_tracker(person):
 
         toggle_buttons = sheet.find_elements_by_class_name('docssharedWizToggleLabeledLabelText')
 
+        #Enter Gender
+        if gender == 'm' : toggle_buttons[0].click()
+        else : toggle_buttons[1].click()
+
         #Enter Job Titles
         from job_des import click_job_desc_elements
         click_job_desc_elements(toggle_buttons[2:], person['Job_Description'])
@@ -26,11 +38,6 @@ def submit_tracker(person):
 
         #Enter OPP link
         sheet.find_element_by_name('entry.169150500').send_keys(person['Opp_Link'].split('/')[-1])
-
-        #Enter Gender; Male is 0th element
-        gender = input(f"\nEnter {person['Name']}'s Gender(m/f):").lower().strip()
-        if gender == 'm' : toggle_buttons[0].click()
-        else : toggle_buttons[1].click()
 
         #Enter Home_LC
         sheet.find_element_by_name('entry.785093106').send_keys(person['Home_LC'])
@@ -52,7 +59,11 @@ def submit_tracker(person):
 
         # Enter Phone_Number with country code
         try:
-            int(person['Phone_Number'])
+            while '+' in person['Phone_Number']:
+                print('\nWARNING : Country Code Detected...\n')
+                person['Phone_Number'] = input('\nEnter Right Phone Number :')
+
+            int(person['Phone_Number'].replace(' ',''))
             phone_num = "+{} {}".format(int_calling_code(person['Country']), person['Phone_Number'])
             sheet.find_element_by_name("entry.268692577").send_keys(phone_num)
         except ValueError:
@@ -92,9 +103,13 @@ def submit_tracker(person):
         'epm_email': "entry.980941299"
         'opp_name':
     """
-
+    except KeyboardInterrupt:
+        print('\nOops, escape key was pressed.. not going to post details of this applicant\n')
     finally:
-        sheet.quit()
+        try:
+            sheet.quit()
+        except Exception as e:
+            print('Error :',e)
 
 #Main Code
 if __name__ == '__main__':
